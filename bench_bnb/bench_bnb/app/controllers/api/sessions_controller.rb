@@ -1,16 +1,24 @@
-class Api::SessionsController < ApplicationController
-  def show
-  end
- 
+class Api::SessionsController < ApplicationController 
   def create
-
+    @user = User.find_by_credentials(
+        params[:user][:username],
+        params[:user][:password]
+        )
+    if @user
+      login(@user)
+      # render jsonn: 'api/users/'
+    else
+      render json: status: 404
+    end
   end
 
   def destroy
-    if !currentUser render json: errors.full_messages status: 404
-
-    @user = User.find_by(params[:id])
-    @user.destroy!
-    render json:
+    @user = current_user
+    if @user
+      logout
+      render json: #'api/users/show'
+    else
+      render json: status: 404
+    end
   end
 end
